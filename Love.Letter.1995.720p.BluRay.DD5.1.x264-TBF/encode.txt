@@ -1,0 +1,10 @@
+aqmode2/1
+qcomp08
+ nombtree !
+psy-normal 
+b-flame normal
+aqstr07
+deblock -3:-3
+
+x264_32_tMod-8bit-420.exe --level 4.1 --crf 17.8 --no-mbtree --deblock -3:-3 --colormatrix bt709 --min-keyint 24 --bframes 10 --b-adapt 2 --ref 9 --vbv-bufsize 78125 --vbv-maxrate 62500 --qcomp 0.8 --rc-lookahead 250 --aq-mode 2 --merange 24 --me umh --direct auto --subme 10 --trellis 2 --no-dct-decimate --no-fast-pskip --zones=0,310,crf=20.2/163364,167255,crf=20.7 -o D:\queues\final-17D3.mp4 D:\Final.avs
+--zones=0,310,crf=20.2/163364,167255,crf=20.7 
