@@ -61,7 +61,7 @@ Dirtyline_H0.FixColumnBrightness(1914, 16, 125, 16, 235).FixColumnBrightness(191
 .Crop(1914, 0, 2, 0) \
 ).Spline36Resize(1280, 538, 0, 0, 0, 0)
 
-#�������߽��صĺ�ɫ����
+#仅解决左边较重的褐色脏线
 Dirtyline_H0V4=StackHorizontal( \
 Dirtyline_H0.BalanceBorders(0, 0, 2, 0, thresh=100, blur=999).FillMargins(1, 0, 0, 0) \
 .FixColumnBrightness(0, 16, 223, 16, 225).FixColumnBrightness(1, 16, 223, 16, 225) \
@@ -83,7 +83,7 @@ Dirtyline_H0.FixColumnBrightness(1914, 16, 125, 16, 235).FixColumnBrightness(191
 .Crop(1914, 0, 2, 0) \
 ).Spline36Resize(1280, 538, 0, 0, 0, 0)
 
-#�����Ͻ�����ʱ��ʱ���ֵİ״�����
+#基础上解决左边时不时出现的白带问题
 Dirtyline_H0V5=StackHorizontal( \
 Dirtyline_H0.BalanceBorders(0, 0, 2, 0, thresh=100, blur=999).FillMargins(1, 0, 0, 0) \
 .FixColumnBrightness(0, 16, 223, 16, 225).FixColumnBrightness(1, 16, 223, 16, 225) \
@@ -106,7 +106,7 @@ Dirtyline_H0.FixColumnBrightness(1914, 16, 125, 16, 235).FixColumnBrightness(191
 ).Spline36Resize(1280, 538, 0, 0, 0, 0).FixColumnBrightness(11, 16, 228, 16, 225).FixColumnBrightness(8, 16, 228, 16, 225).FixColumnBrightness(7, 16, 228, 16, 225).FixColumnBrightness(6, 16, 228, 16, 225).FixColumnBrightness(5, 16, 228, 16, 225).FixColumnBrightness(3, 16, 222, 16, 225)
 
 
-#�����Ͻ���ұ����߱仯����
+#基础上解决右边脏线变化问题
 Dirtyline_H0V6=StackHorizontal( \
 Dirtyline_H0.BalanceBorders(0, 0, 2, 0, thresh=100, blur=999).FillMargins(1, 0, 0, 0) \
 .FixColumnBrightness(0, 16, 223, 16, 225).FixColumnBrightness(1, 16, 223, 16, 225) \
@@ -144,8 +144,9 @@ Function Hard (clip input)
 
 Dirtyline_H0V3
 
+#警告 下面代码有误  == 应为  ！=  这个地方让前面的修脏线 修deband 完全失效  也就是说...相当于没有修...由于发出后才发现本错误 只能引以为戒
 
-ConditionalFilter(Dirtyline_H0V3 , Dirtyline_H0V3_L , "SceneType" , "=" , "31" )
+ConditionalFilter(Dirtyline_H0V3 , Dirtyline_H0V3_L , "SceneType" , "==" , "31" )
 ConditionalFilter(Dirtyline_H0V3 , Dirtyline_H0V3.Mid() , "SceneType" , "==" , "32" )
 ConditionalFilter(Dirtyline_H0V3 , Dirtyline_H0V3.Hard() , "SceneType" , "==" , "33" )
 ConditionalFilter(Dirtyline_H0V3 , Dirtyline_H0V4 , "SceneType" , "==" , "40" )
@@ -158,5 +159,5 @@ ConditionalFilter(Dirtyline_H0V3 , Dirtyline_H0V5.Mid() , "SceneType" , "==" , "
 ConditionalFilter(Dirtyline_H0V3 , Dirtyline_H0V5.Hard() , "SceneType" , "==" , "53" )
 ConditionalFilter(Dirtyline_H0V3 , Dirtyline_H0V6 , "SceneType" , "==" , "60" )
 
-ConditionalReader("D:\ѹ����ʱ���\LOVE LETTER\data.txt" , "SceneType")
+ConditionalReader("D:\压制临时存放\LOVE LETTER\data.txt" , "SceneType")
 
