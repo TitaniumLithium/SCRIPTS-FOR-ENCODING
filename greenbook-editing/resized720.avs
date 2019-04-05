@@ -34,7 +34,7 @@ ConditionalReader("D:\dirtyline-clips.txt" , "SceneType")
 
 # 2 : 1
 
-safe=last.Spline36Resize(1280,640,0,0)
+safe=last.Spline36Resizemod(1280,640,0,0)
 
 #deband 
 
