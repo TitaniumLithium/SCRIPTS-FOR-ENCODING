@@ -1,4 +1,5 @@
 import vapoursynth as vs
+import sgvsfunc as sg
 core = vs.core
 core.num_threads = 1
 core.max_cache_size = 1000
@@ -20,7 +21,7 @@ resized = core.resize.Spline36(clip	= cropped, width = new_width, height = new_h
 
 #resized = core.text.Text(resized, "Source", alignment = 9)
 
-#resized = core.text.FrameProps(resized)
+resized = sg.FrameInfo(resized, "Source")
 
 sample = core.std.SelectEvery(resized, 8000, range(200))
 #每隔3000取200帧
