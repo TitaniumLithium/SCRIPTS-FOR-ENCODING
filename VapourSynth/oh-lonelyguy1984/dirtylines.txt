@@ -1,0 +1,24 @@
+#40031
+cropped = sg.FixColumnBrightnessProtect2(cropped, 1, 3)
+cropped = sg.FixColumnBrightnessProtect2(cropped, 5, 2)
+cropped = sg.FixColumnBrightnessProtect2(cropped, 3, 4)
+
+cropped = sg.FixColumnBrightnessProtect2(cropped, 1915, -1)
+cropped = sg.FixColumnBrightnessProtect2(cropped, 1917, -5)
+cropped = sg.FixColumnBrightnessProtect2(cropped, 1918, -2)
+
+cropped = core.fb.FillBorders(cropped, 0, 0, 1, 1, mode="fillmargins")
+cropped = sg.bbmod(cropped, 0, 0, 1, 1, blur = 20)
+
+
+
+423 - 125350
+
+cropped = sg.FixColumnBrightnessProtect2(cropped, 1915, -2)
+cropped = sg.FixColumnBrightnessProtect2(cropped, 1917, -5)
+cropped = sg.FixColumnBrightnessProtect2(cropped, 1918, -2)
+cropped = sg.FixColumnBrightnessProtect2(cropped, 1919, 61)
+
+cropped = sg.FixColumnBrightnessProtect2(cropped, 3, 3)
+cropped = sg.FixColumnBrightnessProtect2(cropped, 2, -1)
+cropped = sg.FixColumnBrightnessProtect2(cropped, 0, 61)

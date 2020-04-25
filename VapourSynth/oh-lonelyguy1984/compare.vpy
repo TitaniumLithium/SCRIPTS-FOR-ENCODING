@@ -1,7 +1,10 @@
-﻿import vapoursynth as vs
+
+import vapoursynth as vs
 import sgvsfunc as sg
 import havsfunc as ha
 import adjust as adj
+
+import os,shutil,re,logging
 
 core = vs.core
 core.num_threads = 3
@@ -15,23 +18,7 @@ cropped = src
 cropped = core.std.Trim(cropped, 0, 125389)
 cropped = core.std.Crop(cropped, 0, 0, 18, 18)
 
-#fix dirty lines and single black borders
-
-#40031
-'''
-cropped = sg.FixColumnBrightnessProtect2(cropped, 1, 3)
-cropped = sg.FixColumnBrightnessProtect2(cropped, 5, 2)
-cropped = sg.FixColumnBrightnessProtect2(cropped, 3, 4)
-
-cropped = sg.FixColumnBrightnessProtect2(cropped, 1915, -1)
-cropped = sg.FixColumnBrightnessProtect2(cropped, 1917, -5)
-cropped = sg.FixColumnBrightnessProtect2(cropped, 1918, -2)
-
-cropped = core.fb.FillBorders(cropped, 0, 0, 1, 1, mode="fillmargins")
-cropped = sg.bbmod(cropped, 0, 0, 1, 1, blur = 20)
-#40031
-'''
-#start
+#修复脏线 （第一部分）
 cropped = sg.FixColumnBrightnessProtect2(cropped, 1915, -2)
 cropped = sg.FixColumnBrightnessProtect2(cropped, 1917, -5)
 cropped = sg.FixColumnBrightnessProtect2(cropped, 1918, -2)
@@ -39,12 +26,10 @@ cropped = sg.FixColumnBrightnessProtect2(cropped, 1919, 61)
 
 cropped = sg.FixColumnBrightnessProtect2(cropped, 3, 3)
 cropped = sg.FixColumnBrightnessProtect2(cropped, 2, -1)
-#cropped = sg.FixColumnBrightnessProtect2(cropped, 1, 5)
-cropped = sg.FixColumnBrightnessProtect2(cropped, 0, 62)
+cropped = sg.FixColumnBrightnessProtect2(cropped, 0, 61)
 
+#填充单pixel黑边
 cropped = core.fb.FillBorders(cropped, 0, 0, 1, 1, mode="fillmargins")
-#end
-
 
 stack_top = core.std.Crop(cropped, 0, 0, 0, 1042)
 stack_mid = core.std.Crop(cropped, 0, 0, 2, 2)
@@ -56,23 +41,25 @@ cropped = core.std.StackVertical([stack_top, stack_mid, stack_bottom])
 
 cropped = sg.bbmod(cropped, 1,0,0,0)
 
+#修复脏线（第二部分）
 cropped_addborder = core.std.Trim(src, 125390, 130179)
 cropped_addborder = core.std.Crop(cropped_addborder, 60, 60, 32, 32)
-
-cropped_addborder = sg.FixColumnBrightnessProtect2(cropped_addborder, 0, 58)#需饱和度
+cropped_addborder = sg.FixColumnBrightnessProtect2(cropped_addborder, 0, 58)
 cropped_addborder = sg.FixColumnBrightnessProtect2(cropped_addborder, 1797, -3)
-cropped_addborder = sg.FixColumnBrightnessProtect2(cropped_addborder, 1798, 56) #需饱和度
-cropped_addborder = sg.FixRowBrightnessProtect2(cropped_addborder, 1, 20) #需饱和度
+cropped_addborder = sg.FixColumnBrightnessProtect2(cropped_addborder, 1798, 56) 
+cropped_addborder = sg.FixRowBrightnessProtect2(cropped_addborder, 1, 20)
 cropped_addborder = sg.FixRowBrightnessProtect2(cropped_addborder, 2, -8)
 cropped_addborder = sg.FixRowBrightnessProtect2(cropped_addborder, 4, 3)
 cropped_addborder = sg.FixRowBrightnessProtect2(cropped_addborder, 1010, 3)
 cropped_addborder = sg.FixRowBrightnessProtect2(cropped_addborder, 1012, -10)
-cropped_addborder = sg.FixRowBrightnessProtect2(cropped_addborder, 1013, 19) #需饱和度
-cropped_addborder = sg.FixRowBrightnessProtect2(cropped_addborder, 1014, 81) #需饱和度
+cropped_addborder = sg.FixRowBrightnessProtect2(cropped_addborder, 1013, 19) 
+cropped_addborder = sg.FixRowBrightnessProtect2(cropped_addborder, 1014, 81)
 
+#填充单pixel黑边
 cropped_addborder = core.fb.FillBorders(cropped_addborder, 0, 1, 1, 1, mode="fillmargins")
 
-#1800 x 1016
+
+#调整饱和度 及 使用bbmod
 
 YUV444 = core.resize.Bicubic(cropped_addborder, format=vs.YUV444P8)
 TW_Left = core.std.Crop(YUV444, 0, 1799, 0, 0)
@@ -101,41 +88,48 @@ YUV444 = core.std.StackHorizontal([TW_Left, TW_LtoR, TW_Right])
 
 cropped_addborder = core.resize.Bicubic(YUV444, format=vs.YUV420P8)
 
+#手动增加第二部分黑边
 cropped_addborder = core.std.AddBorders(cropped_addborder, 60, 60, 14, 14)
 
-
+#合并两部分
 cropped = core.std.Splice([cropped, cropped_addborder])
 
 
-#core.resize.Spline36(clip = cropped, format = vs.RGB24, dither_type = "error_diffusion", matrix_in_s = "709").set_output()
 
-#125390 130179
 
-'''
-new_height = round(cropped.height*1280/cropped.width/2)*2
-new_width = round(cropped.width*720/cropped.height/2)*2
 
-if new_height < 720 and new_width >= 1280 :
-	new_width = 1280
-elif new_height >= 720 and new_width < 1280 :
-	new_height = 720
 
-resized = core.resize.Spline36(clip	= cropped, width = new_width, height = new_height, src_left = 0, src_top = 0, src_height = cropped.height, src_width = cropped.width)
+encode=[]
+name=[]
 
-#resized = core.text.Text(resized, "Source", alignment = 9)
+match_str = r'\.mkv$'
 
-resized = sg.FrameInfo(resized, "Source")
+encode_path = r"D:\queues\ohlonelyguy\crf01"
 
-sample = core.std.SelectEvery(resized, 8000, range(200))
-#每隔3000取200帧
-sample = core.std.AssumeFPS(sample, resized)
-#同步帧率 sample同步为resized的帧率
-'''
+content=[str(x) for x in os.listdir(encode_path) if os.path.isfile(os.path.join(encode_path,str(x)))]
+
+if content != [] :
+	for i in range(len(content)):
+		if(re.search(match_str,content[i])) :
+			encode.append(core.lsmas.LWLibavSource(source=os.path.join(encode_path, content[i]), threads=1))
+			name.append(content[i])
 
 sample = core.std.SelectEvery(cropped, 8000, range(200))
-#每隔3000取200帧
 sample = core.std.AssumeFPS(sample, cropped)
-#同步帧率 sample同步为resized的帧率
-#sample = core.resize.Bicubic(sample, matrix_s="709")
-#sample = core.std.SetFrameProp(sample, prop="_Primaries", delete=True)
-core.resize.Bicubic(sample, format=vs.YUV420P8, matrix_in_s = "709", matrix_in = 1, primaries_in = 1, transfer_in = 1, matrix_s="709", transfer = 1, primaries = 1, matrix = 1).set_output()
+sum = sample
+output = []
+
+for i in range(len(encode)):
+	encode[i] = core.resize.Bicubic(encode[i], format=vs.YUV420P8, matrix_in_s = "709", matrix_in = 1, primaries_in = 1, transfer_in = 1, matrix_s="709",transfer = 1, primaries = 1)
+	#encode[i] = core.Butteraugli.butteraugli(sample, encode[i])
+	encode[i] = sg.FrameInfo(encode[i], name[i])
+	#sum = sum + encode[i]
+	#output.append(core.std.Trim(sum,i*3400-1,i*6800-2))
+
+
+#core.resize.Bicubic(sample, format=vs.YUV420P8, matrix_in_s = "709", matrix_in = 1, primaries_in = 1, transfer_in = 1, matrix_s="709",transfer = 1, primaries = 1).set_output()
+#encodeout = core.std.SetFrameProp(encodeout, prop="_Primaries", delete=True)
+#core.Butteraugli.butteraugli(f1, f2).set_output()
+#encode[1].set_output()
+core.imwri.Write(core.std.SelectEvery(sample, 100, range(1)), "PNG", "D:\compare\00\%d,png")
+encode[3].set_output()-

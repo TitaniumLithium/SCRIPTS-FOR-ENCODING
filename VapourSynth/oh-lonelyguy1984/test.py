@@ -1,4 +1,4 @@
-﻿import vapoursynth as vs
+import vapoursynth as vs
 import sgvsfunc as sg
 import havsfunc as ha
 import adjust as adj
@@ -58,7 +58,6 @@ cropped = sg.bbmod(cropped, 1,0,0,0)
 
 cropped_addborder = core.std.Trim(src, 125390, 130179)
 cropped_addborder = core.std.Crop(cropped_addborder, 60, 60, 32, 32)
-
 cropped_addborder = sg.FixColumnBrightnessProtect2(cropped_addborder, 0, 58)#需饱和度
 cropped_addborder = sg.FixColumnBrightnessProtect2(cropped_addborder, 1797, -3)
 cropped_addborder = sg.FixColumnBrightnessProtect2(cropped_addborder, 1798, 56) #需饱和度
@@ -136,6 +135,4 @@ sample = core.std.SelectEvery(cropped, 8000, range(200))
 #每隔3000取200帧
 sample = core.std.AssumeFPS(sample, cropped)
 #同步帧率 sample同步为resized的帧率
-#sample = core.resize.Bicubic(sample, matrix_s="709")
-#sample = core.std.SetFrameProp(sample, prop="_Primaries", delete=True)
-core.resize.Bicubic(sample, format=vs.YUV420P8, matrix_in_s = "709", matrix_in = 1, primaries_in = 1, transfer_in = 1, matrix_s="709", transfer = 1, primaries = 1, matrix = 1).set_output()
+sample.set_output()
